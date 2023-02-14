@@ -1,0 +1,45 @@
+
+-------------------------------------------------------------------------------------------
+Config commands
+
+git config --global user.name "username"  
+git config --global user.email "useremail@gmail.com"  
+-------------------------------------------------------------------------------------------
+Clone git to local
+
+git clone URL
+-------------------------------------------------------------------------------------------
+Add changes in the local
+
+git add filename
+-------------------------------------------------------------------------------------------
+Commit changes in the local
+
+git commit -m "Message"
+-------------------------------------------------------------------------------------------
+Push the changes to remote from local
+
+git push
+-------------------------------------------------------------------------------------------
+Get latest changes from remote to local
+
+git pull
+-------------------------------------------------------------------------------------------
+Initialize the existing directory to git
+
+git init
+-------------------------------------------------------------------------------------------
+
+git branch
+
+git merge sourcebranch destinationbranch
+
+git rebase source branch destinationbranch
+-------------------------------------------------------------------------------------------
+Get the logs 
+
+git log
+
+-------------------------------------------------------------------------------------------
+Add new remote
+git remote add origin url
