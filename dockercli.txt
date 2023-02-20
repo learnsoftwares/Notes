@@ -1,0 +1,42 @@
+Container
+
+
+
+1. dockerhub - Account
+2. Docker -Install
+
+
+
+docker commands
+
+docker images - list out all the images
+docker ps   - list out all the containers (running)
+docker ps -a - list out all the containers (running + stoped)
+
+
+docker pull imagename
+
+docker run options imagename (create container)
+
+		options - i - interactive    -- operating system (ubuntu)
+				t -tty (terminal)
+			   -d - detached   - applications (background) - tomcat(8080)/jenkins(8080)/nginx(80)
+
+	docker run -it imagename
+		docker run -it ubuntu
+		ctrl + p + q
+
+	docker run -d imagename
+
+		docker run -d -p 9092:80 nginx
+
+
+
+
+
+docker stop containerid/name
+docker start containerid/name
+docker pause contianerid/name
+docker unpause containerid/name
+docker rm containerid/name
+
