@@ -39,4 +39,6 @@ docker start containerid/name
 docker pause contianerid/name
 docker unpause containerid/name
 docker rm containerid/name
+docker restart containerid/name
+docker kill containerid/name
 
