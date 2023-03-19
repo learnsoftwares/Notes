@@ -1,0 +1,7 @@
+https://www.linuxtechi.com/how-to-install-ansible-on-ubuntu/
+
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
