@@ -1,0 +1,52 @@
+// build the image
+docker build -t react-nginx-ui .
+// run the image
+docker run -d --name react-nginx-webapp -p 80:80 react-nginx-ui
+// list the image you just built
+docker images
+// list the container
+docker ps
+
+
+// create a resource group
+az group create --name k8s-demo --location westus
+// create a container registry
+az acr create --resource-group k8s-demo \
+  --name registryfrontend21323 --sku Basic
+
+
+az acr build --image aksdemo/react-nginx:v1 \
+  --registry registryfrontend21323 \
+  --file Dockerfile .
+
+docker pull registryfrontend21323.azurecr.io/aksdemo/react-nginx:v1
+
+
+az group create --name k8s-demo --location westus
+
+az aks create --resource-group k8s-demo --name frontend-cluster --node-count 3 --enable-addons monitoring --generate-ssh-keys
+
+// install CLI
+az aks install-cli
+// connect to your cluster
+az aks get-credentials --resource-group k8s-demo --name frontend-cluster
+// get all the contexts
+kubectl config get-contexts
+// verify the current context
+kubectl config current-context
+// get the node
+kubectl get nodes
+
+az aks update -n frontend-cluster -g k8s-demo --attach-acr registryfrontend21323
+
+kubectl create -f manifest.yml
+
+
+// list the deployment
+kubectl get deploy
+// list the pods
+kubectl get po
+// list the service
+kubectl get svc
+
+az group delete --name k8s-demo
