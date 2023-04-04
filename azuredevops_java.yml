@@ -1,0 +1,68 @@
+trigger:
+- main
+
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '<your subscription name>'
+  # AKS cluster information
+  aksResourceGroup: '<your AKS resource group name>'
+  aksClusterName: '<your AKS cluster name>'
+  # Docker registry information
+  dockerRegistryServiceConnection: '<your Docker registry service connection name>'
+  dockerRegistry: '<your Docker registry URL>'
+  dockerRegistryId: '<your Docker registry ID>'
+  dockerRegistryPassword: '<your Docker registry password>'
+
+stages:
+- stage: Build
+  displayName: Build and push Docker image
+  jobs:
+  - job: BuildImage
+    displayName: Build and push
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+     # Checkout the source code
+    - checkout: self
+      submodules: recursive
+    # Build the application using Maven
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'package'
+        publishJUnitResults: false
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+    # Build and push the Docker image
+    - task: Docker@2
+      displayName: Build and push Docker image
+      inputs:
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(dockerRegistry)/<your image name>
+        command: buildAndPush
+        Dockerfile: '<path to your Dockerfile>'
+
+- stage: Deploy
+  displayName: Deploy to AKS
+  dependsOn: Build
+  jobs:
+  - job: DeployToAks
+    displayName: Deploy to AKS
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment:
+      name: '<your environment name>'
+      resourceType: 'Kubernetes'
+    steps:
+    - task: Kubernetes@1
+      displayName: Deploy to Kubernetes cluster
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: '$(azureSubscription)'
+        azureResourceGroup: '$(aksResourceGroup)'
+        kubernetesCluster: '$(aksClusterName)'
+        command: 'apply'
+        useConfigurationFile: true
+        configurationType: 'filePath'
+        configurationFile: '<path to your Kubernetes YAML file>'
