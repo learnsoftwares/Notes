@@ -108,3 +108,31 @@ resource "azurerm_linux_virtual_machine" "example_vm2" {
     storage_account_type = "Standard_LRS"
   }
 }
+
+
+
+
+# Define the application configuration policy
+resource "azurerm_kubernetes_cluster_application_configuration" "example_app_config" {
+  name                = "example-app-config"
+  resource_group_name = azurerm_resource_group.example_rg.name
+  cluster_name        = azurerm_kubernetes_cluster.example_aks.name
+
+  # Define the configuration settings using a ConfigMap
+  config_map = {
+    data = {
+      "application.properties" = <<EOF
+      server.port=8080
+      database.url=jdbc:postgresql://mydatabase.postgres.database.azure.com:5432/mydatabase?sslmode=require&user=myuser@myserver&password=mypassword
+      EOF
+    }
+  }
+
+  # Define the target namespace for the configuration
+  target_namespace = "default"
+
+  # Define the labels to apply to the resources created by this policy
+  labels = {
+    environment = "dev"
+  }
+}
