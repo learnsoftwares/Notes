@@ -1,0 +1,110 @@
+provider "azurerm" {
+  features {}
+}
+
+# Define the resource group
+resource "azurerm_resource_group" "example_rg" {
+  name     = "example-rg"
+  location = "eastus"
+}
+
+# Define the virtual network
+resource "azurerm_virtual_network" "example_vnet" {
+  name                = "example-vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.example_rg.location
+  resource_group_name = azurerm_resource_group.example_rg.name
+}
+
+# Define the subnet
+resource "azurerm_subnet" "example_subnet" {
+  name                 = "example-subnet"
+  resource_group_name  = azurerm_resource_group.example_rg.name
+  virtual_network_name = azurerm_virtual_network.example_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+# Define the network security group
+resource "azurerm_network_security_group" "example_nsg" {
+  name                = "example-nsg"
+  location            = azurerm_resource_group.example_rg.location
+  resource_group_name = azurerm_resource_group.example_rg.name
+
+  # Define the default rule to allow all traffic in and out of the subnet
+  security_rule {
+    name                       = "AllowAllTraffic"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+# Create three virtual machines
+resource "azurerm_linux_virtual_machine" "example_vm1" {
+  name                  = "example-vm1"
+  location              = azurerm_resource_group.example_rg.location
+  resource_group_name   = azurerm_resource_group.example_rg.name
+  size                  = "Standard_B2s"
+  admin_username        = "adminuser"
+  network_interface_ids = [azurerm_network_interface.example_nic1.id]
+
+  # Define the virtual machine's OS disk
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+  os_disk {
+    name              = "example-vm1-osdisk"
+    caching           = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  # Define the virtual machine's data disks
+  storage_data_disk {
+    name              = "example-vm1-datadisk1"
+    disk_size_gb      = 32
+    create_option     = "Empty"
+    lun               = 0
+    caching           = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "example_vm2" {
+  name                  = "example-vm2"
+  location              = azurerm_resource_group.example_rg.location
+  resource_group_name   = azurerm_resource_group.example_rg.name
+  size                  = "Standard_B2s"
+  admin_username        = "adminuser"
+  network_interface_ids = [azurerm_network_interface.example_nic2.id]
+
+  # Define the virtual machine's OS disk
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+  os_disk {
+    name              = "example-vm2-osdisk"
+    caching           = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  # Define the virtual machine's data disks
+  storage_data_disk {
+    name              = "example-vm2-datadisk1"
+    disk_size_gb      = 32
+    create_option     = "Empty"
+    lun               = 0
+    caching           = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
