@@ -118,3 +118,16 @@ spec:
       targetPort: 80
   selector:
       app: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service-loadbalancer
+spec:
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 9000
+  type: LoadBalancer
+---
